@@ -515,7 +515,8 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
     local item = string.match(message, "You feel something pulling at your line.");
     local skillup = string.match(message, "fishing skill rises (.*) points")
     local skill = string.match(message, "You lost your catch due to your lack of skill.")
-    local monster = string.match(message, "Something clamps onto your line ferociously!")       
+    local monster = string.match(message, "Something clamps onto your line ferociously!")
+    local cantfish = string.match(message, "You can't fish") -- Endings: "without bait on the hook." , "at the moment."
 
     if(count == 0 or count == nil) then
         count = 1;
@@ -563,7 +564,9 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
             GoneFishin.Fish[monster] = GoneFishin.Fish[monster] + 1;
         else
             GoneFishin.Fish[monster] = 1;
-        end 
+        end
+    elseif (cantfish) then
+        GoneFishin.TotalCasts = GoneFishin.TotalCasts - 1;
     end
     --[[if(((GoneFishin.hooked and LastBiteMsg ~= 'item') or nothing or item or skill or monster) or ( giveUpFalse == nil and giveUp)) then
         GoneFishin.TotalCasts = GoneFishin.TotalCasts + 1;   
