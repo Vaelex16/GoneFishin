@@ -127,8 +127,7 @@ end
 
 -- Depreciated
 function AssembleLogString()
-    -- Offset by 8 hours for... reasons?
-    local elapsedTime = os.date('%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast)+28800 + GoneFishin.LastSessionLenth)
+    local elapsedTime = os.date('!%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast) + GoneFishin.LastSessionLenth)
     local s = string.format('%s%-20s%-8s%s|r\n', '|cFF7f99b2|','Fish','Qty','Bite Rate');
     for k, v in pairs(GoneFishin.Fish) do
         local bite = string.format("%.2f",v/GoneFishin.TotalCasts*100)   
@@ -300,9 +299,9 @@ local function RenderLog()
         imgui.Separator();
         imgui.Separator();
         if(GoneFishin.FirstCast ~= 0) then
-            local elapsedTime = os.date('%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast)+28800+GoneFishin.LastSessionLength)
+            local elapsedTime = os.date('!%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast)+GoneFishin.LastSessionLength)
             if(GoneFishin.sessionPaused) then
-                elapsedTime = os.date('%H:%M:%S',GoneFishin.LastSessionLength+28800);
+                elapsedTime = os.date('!%H:%M:%S',GoneFishin.LastSessionLength);
             end
             imgui.Text(string.format('Session: %s', elapsedTime));
             imgui.Text(string.format('Casts: %d', GoneFishin.TotalCasts));
