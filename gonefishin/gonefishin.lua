@@ -188,14 +188,14 @@ end
 local function PauseSession()
     GoneFishin.LastSessionLength = GoneFishin.LastSessionLength + os.difftime(os.time(),GoneFishin.FirstCast);
     GoneFishin.sessionPaused = true;
-    print(chat.header(addon.name):append(chat.message('Fishing sesison paused.')));
+    print(chat.header(addon.name):append(chat.message('Fishing session paused.')));
 end
 
 local function ResumeSession()    
     GoneFishin.sessionPaused = false;
     GoneFishin.FirstCast = os.time();
     GoneFishin.LastCast = os.time();
-    print(chat.header(addon.name):append(chat.message('Fishing sesison resumed.')));
+    print(chat.header(addon.name):append(chat.message('Fishing session resumed.')));
 end
 
 local function ParseFishMessages(message)
@@ -313,7 +313,7 @@ local function RenderLog()
             if(GoneFishin.sessionPaused == false) then
                 PauseSession();
             else
-                print(chat.header(addon.name):append(chat.message('Sesison is already paused.')));
+                print(chat.header(addon.name):append(chat.message('session is already paused.')));
             end            
         end 
         imgui.SameLine();
@@ -405,11 +405,11 @@ ashita.events.register('command', 'command_cb', function(e)
             return;
         elseif(args[2]:any('show'))then
             GoneFishin.fishLogActive = true;
-            print(chat.header(addon.name):append(chat.message('Fishing sesison window is now shown.')));
+            print(chat.header(addon.name):append(chat.message('Fishing session window is now shown.')));
             return;
         elseif(args[2]:any('hide'))then
             GoneFishin.fishLogActive = false;
-            print(chat.header(addon.name):append(chat.message('Fishing sesison window is now hidden.')));
+            print(chat.header(addon.name):append(chat.message('Fishing session window is now hidden.')));
             return;
         elseif(args[2]:any('pause'))then
             PauseSession();
@@ -422,45 +422,45 @@ ashita.events.register('command', 'command_cb', function(e)
         if(args[2]:any('show')) then
             if(args[3]:any('item')) then
                 GoneFishin.Settings.showItem[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'item\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'item\' entry.')));
                 return;
             elseif(args[3]:any('monster')) then
                 GoneFishin.Settings.showMonster[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'monster\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'monster\' entry.')));
                 return;
             elseif(args[3]:any('giveup')) then    
                 GoneFishin.Settings.showGiveup[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'giveup\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'giveup\' entry.')));
                 return;
             elseif(args[3]:any('skill')) then
                 GoneFishin.Settings.showSkill[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'skill\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'skill\' entry.')));
                 return;
             elseif(args[3]:any('nothing')) then
                 GoneFishin.Settings.showNothing[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'nothing\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'nothing\' entry.')));
                 return;
             end
         elseif(args[2]:any('hide')) then
             if(args[3]:any('item')) then
                 GoneFishin.Settings.showItem[1] = false;                
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'item\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'item\' entry.')));
                 return;
             elseif(args[3]:any('monster')) then
                 GoneFishin.Settings.showMonster[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'monster\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'monster\' entry.')));
                 return;
             elseif(args[3]:any('giveup')) then    
                 GoneFishin.Settings.showGiveup[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'giveup\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'giveup\' entry.')));
                 return;
             elseif(args[3]:any('skill')) then
                 GoneFishin.Settings.showSkill[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'skill\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'skill\' entry.')));
                 return;
             elseif(args[3]:any('nothing')) then
                 GoneFishin.Settings.showNothing[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'nothing\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'nothing\' entry.')));
                 return;
             end
         end
