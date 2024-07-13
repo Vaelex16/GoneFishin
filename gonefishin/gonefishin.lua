@@ -484,6 +484,22 @@ ashita.events.register('packet_in', 'GoneFishin_HandleIncomingPacket', function 
     end
 end);
 
+
+ashita.events.register('packet_out', 'GoneFishin_HandleOutgoingPacket', function (e)
+    -- Packet info from: https://github.com/Windower/Lua/blob/dev/addons/libs/packets/: data.lua and fields.lua
+    if (e.id == 0x01A) then -- Action Packet
+        if (struct.unpack('H', e.data, 0x0A + 1) == 14) then -- If Action 0x0A + 1 = 0x0E Cast Fishing Rod
+            GoneFishin.TotalCasts = GoneFishin.TotalCasts + 1;
+            GoneFishin.LastCast =  os.time()
+            if(GoneFishin.FirstCast == 0) then
+                GoneFishin.FirstCast = os.time();
+                GoneFishin.fishLogActive = true;
+            end
+            if(GoneFishin.sessionPaused) then ResumeSession(); end
+        end
+    end
+end);
+
 ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
     GoneFishin.hooked = false;
     ParseFishMessages(e.message);
@@ -550,7 +566,7 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
             GoneFishin.Fish[monster] = 1;
         end 
     end
-    if(((GoneFishin.hooked and LastBiteMsg ~= 'item') or nothing or item or skill or monster) or ( giveUpFalse == nil and giveUp)) then
+    --[[if(((GoneFishin.hooked and LastBiteMsg ~= 'item') or nothing or item or skill or monster) or ( giveUpFalse == nil and giveUp)) then
         GoneFishin.TotalCasts = GoneFishin.TotalCasts + 1;   
         GoneFishin.LastCast =  os.time()
         if(GoneFishin.FirstCast == 0) then
@@ -559,7 +575,7 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
             GoneFishin.fishLogActive = true;            
         end        
         if(GoneFishin.sessionPaused) then ResumeSession(); end
-    end
+    end]]
     if(skillup) then
         GoneFishin.SkillUps = GoneFishin.SkillUps + skillup;
     end
