@@ -55,9 +55,11 @@ local default_settings = T{
     showMonster = T {true},
     showGiveup = T {true},
     showSkill = T {true},
-    showNothing = T {true},    
+    showNothing = T {true},
     visible = T {true},
     fishInfoVisible =  T {true},
+    playerSkill = nil,
+    showPlayerSkill = T {true},
 }
 
 local GoneFishin = 
@@ -253,6 +255,8 @@ local function RenderGeneralSettings()
     imgui.ShowHelp('Toggles if the \'lack of skill\' tag is visible in the fishing log.');
     imgui.Checkbox('Show Nothing tag', GoneFishin.Settings.showNothing);
     imgui.ShowHelp('Toggles if the \'nothing\' tag is visible in the fishing log.');
+    imgui.Checkbox('Show Player Skill', GoneFishin.Settings.showPlayerSkill);
+    imgui.ShowHelp('Toggles showing the player\'s total fishing skill in the fishing log.');
     imgui.Separator();
     imgui.Text('Fish Info');
     -- fish info
@@ -306,6 +310,10 @@ local function RenderLog()
             imgui.Text(string.format('Session: %s', elapsedTime));
             imgui.Text(string.format('Casts: %d', GoneFishin.TotalCasts));
             imgui.Text(string.format('Skill-Ups: %.1f', GoneFishin.SkillUps));
+            if (GoneFishin.Settings.showPlayerSkill[1] == true) then
+				imgui.SameLine()
+				imgui.Text(string.format('\tFishing Skill: %.1f', GoneFishin.Settings.playerSkill))
+			end
         end  
         imgui.Separator();
         if (imgui.Button('Pause')) then
@@ -495,6 +503,11 @@ ashita.events.register('packet_out', 'GoneFishin_HandleOutgoingPacket', function
                 GoneFishin.fishLogActive = true;
             end
             if(GoneFishin.sessionPaused) then ResumeSession(); end
+
+            if (GoneFishin.Settings.playerSkill == nil) then
+                local fishingSkill = AshitaCore:GetMemoryManager():GetPlayer():GetCraftSkill(0)
+                GoneFishin.Settings.playerSkill = fishingSkill:GetSkill()
+            end
         end
     end
 end);
@@ -513,10 +526,11 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
     local giveUp = string.match(message, "You give up.");
     local giveUpFalse = string.match(message, "You give up and reel in your line.");
     local item = string.match(message, "You feel something pulling at your line.");
-    local skillup = string.match(message, "fishing skill rises (.*) points")
-    local skill = string.match(message, "You lost your catch due to your lack of skill.")
-    local monster = string.match(message, "Something clamps onto your line ferociously!")
-    local cantfish = string.match(message, "You can't fish") -- Endings: "without bait on the hook." , "at the moment."
+    local skillup = string.match(message, "fishing skill rises (.*) points");
+    local skill = string.match(message, "You lost your catch due to your lack of skill.");
+    local monster = string.match(message, "Something clamps onto your line ferociously!");
+    local cantfish = string.match(message, "You can't fish"); -- Endings: "without bait on the hook." , "at the moment."
+    local skillLevelUp = string.match(message, "fishing skill reaches level (%d*)");
 
     if(count == 0 or count == nil) then
         count = 1;
@@ -580,6 +594,10 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
     end]]
     if(skillup) then
         GoneFishin.SkillUps = GoneFishin.SkillUps + skillup;
+        GoneFishin.Settings.playerSkill = GoneFishin.Settings.playerSkill + skillup;
+    end
+    if (skillLevelUp) then
+        GoneFishin.Settings.playerSkill = tonumber(skillLevelUp) + 0.0
     end
 
 end);
