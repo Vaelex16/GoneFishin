@@ -597,7 +597,9 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
         GoneFishin.Settings.playerSkill = GoneFishin.Settings.playerSkill + skillup;
     end
     if (skillLevelUp) then
-        GoneFishin.Settings.playerSkill = tonumber(skillLevelUp) + 0.0
+        if ((skillLevelUp + 0.0) > GoneFishin.Settings.playerSkill) then
+            GoneFishin.Settings.playerSkill = tonumber(skillLevelUp) + 0.0
+        end
     end
 
 end);
