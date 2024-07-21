@@ -55,9 +55,11 @@ local default_settings = T{
     showMonster = T {true},
     showGiveup = T {true},
     showSkill = T {true},
-    showNothing = T {true},    
+    showNothing = T {true},
     visible = T {true},
     fishInfoVisible =  T {true},
+    playerSkill = nil,
+    showPlayerSkill = T {true},
 }
 
 local GoneFishin = 
@@ -127,8 +129,7 @@ end
 
 -- Depreciated
 function AssembleLogString()
-    -- Offset by 8 hours for... reasons?
-    local elapsedTime = os.date('%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast)+28800 + GoneFishin.LastSessionLenth)
+    local elapsedTime = os.date('!%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast) + GoneFishin.LastSessionLenth)
     local s = string.format('%s%-20s%-8s%s|r\n', '|cFF7f99b2|','Fish','Qty','Bite Rate');
     for k, v in pairs(GoneFishin.Fish) do
         local bite = string.format("%.2f",v/GoneFishin.TotalCasts*100)   
@@ -188,14 +189,14 @@ end
 local function PauseSession()
     GoneFishin.LastSessionLength = GoneFishin.LastSessionLength + os.difftime(os.time(),GoneFishin.FirstCast);
     GoneFishin.sessionPaused = true;
-    print(chat.header(addon.name):append(chat.message('Fishing sesison paused.')));
+    print(chat.header(addon.name):append(chat.message('Fishing session paused.')));
 end
 
 local function ResumeSession()    
     GoneFishin.sessionPaused = false;
     GoneFishin.FirstCast = os.time();
     GoneFishin.LastCast = os.time();
-    print(chat.header(addon.name):append(chat.message('Fishing sesison resumed.')));
+    print(chat.header(addon.name):append(chat.message('Fishing session resumed.')));
 end
 
 local function ParseFishMessages(message)
@@ -254,6 +255,8 @@ local function RenderGeneralSettings()
     imgui.ShowHelp('Toggles if the \'lack of skill\' tag is visible in the fishing log.');
     imgui.Checkbox('Show Nothing tag', GoneFishin.Settings.showNothing);
     imgui.ShowHelp('Toggles if the \'nothing\' tag is visible in the fishing log.');
+    imgui.Checkbox('Show Player Skill', GoneFishin.Settings.showPlayerSkill);
+    imgui.ShowHelp('Toggles showing the player\'s total fishing skill in the fishing log.');
     imgui.Separator();
     imgui.Text('Fish Info');
     -- fish info
@@ -300,20 +303,24 @@ local function RenderLog()
         imgui.Separator();
         imgui.Separator();
         if(GoneFishin.FirstCast ~= 0) then
-            local elapsedTime = os.date('%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast)+28800+GoneFishin.LastSessionLength)
+            local elapsedTime = os.date('!%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast)+GoneFishin.LastSessionLength)
             if(GoneFishin.sessionPaused) then
-                elapsedTime = os.date('%H:%M:%S',GoneFishin.LastSessionLength+28800);
+                elapsedTime = os.date('!%H:%M:%S',GoneFishin.LastSessionLength);
             end
             imgui.Text(string.format('Session: %s', elapsedTime));
             imgui.Text(string.format('Casts: %d', GoneFishin.TotalCasts));
             imgui.Text(string.format('Skill-Ups: %.1f', GoneFishin.SkillUps));
+            if (GoneFishin.Settings.showPlayerSkill[1] == true) then
+				imgui.SameLine()
+				imgui.Text(string.format('\tFishing Skill: %.1f', GoneFishin.Settings.playerSkill))
+			end
         end  
         imgui.Separator();
         if (imgui.Button('Pause')) then
             if(GoneFishin.sessionPaused == false) then
                 PauseSession();
             else
-                print(chat.header(addon.name):append(chat.message('Sesison is already paused.')));
+                print(chat.header(addon.name):append(chat.message('session is already paused.')));
             end            
         end 
         imgui.SameLine();
@@ -405,11 +412,11 @@ ashita.events.register('command', 'command_cb', function(e)
             return;
         elseif(args[2]:any('show'))then
             GoneFishin.fishLogActive = true;
-            print(chat.header(addon.name):append(chat.message('Fishing sesison window is now shown.')));
+            print(chat.header(addon.name):append(chat.message('Fishing session window is now shown.')));
             return;
         elseif(args[2]:any('hide'))then
             GoneFishin.fishLogActive = false;
-            print(chat.header(addon.name):append(chat.message('Fishing sesison window is now hidden.')));
+            print(chat.header(addon.name):append(chat.message('Fishing session window is now hidden.')));
             return;
         elseif(args[2]:any('pause'))then
             PauseSession();
@@ -422,45 +429,45 @@ ashita.events.register('command', 'command_cb', function(e)
         if(args[2]:any('show')) then
             if(args[3]:any('item')) then
                 GoneFishin.Settings.showItem[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'item\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'item\' entry.')));
                 return;
             elseif(args[3]:any('monster')) then
                 GoneFishin.Settings.showMonster[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'monster\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'monster\' entry.')));
                 return;
             elseif(args[3]:any('giveup')) then    
                 GoneFishin.Settings.showGiveup[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'giveup\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'giveup\' entry.')));
                 return;
             elseif(args[3]:any('skill')) then
                 GoneFishin.Settings.showSkill[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'skill\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'skill\' entry.')));
                 return;
             elseif(args[3]:any('nothing')) then
                 GoneFishin.Settings.showNothing[1] = true;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now show \'nothing\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now show \'nothing\' entry.')));
                 return;
             end
         elseif(args[2]:any('hide')) then
             if(args[3]:any('item')) then
                 GoneFishin.Settings.showItem[1] = false;                
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'item\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'item\' entry.')));
                 return;
             elseif(args[3]:any('monster')) then
                 GoneFishin.Settings.showMonster[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'monster\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'monster\' entry.')));
                 return;
             elseif(args[3]:any('giveup')) then    
                 GoneFishin.Settings.showGiveup[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'giveup\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'giveup\' entry.')));
                 return;
             elseif(args[3]:any('skill')) then
                 GoneFishin.Settings.showSkill[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'skill\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'skill\' entry.')));
                 return;
             elseif(args[3]:any('nothing')) then
                 GoneFishin.Settings.showNothing[1] = false;
-                print(chat.header(addon.name):append(chat.message('Fishing sesison window will now hide \'nothing\' entry.')));
+                print(chat.header(addon.name):append(chat.message('Fishing session window will now hide \'nothing\' entry.')));
                 return;
             end
         end
@@ -484,6 +491,27 @@ ashita.events.register('packet_in', 'GoneFishin_HandleIncomingPacket', function 
     end
 end);
 
+
+ashita.events.register('packet_out', 'GoneFishin_HandleOutgoingPacket', function (e)
+    -- Packet info from: https://github.com/Windower/Lua/blob/dev/addons/libs/packets/: data.lua and fields.lua
+    if (e.id == 0x01A) then -- Action Packet
+        if (struct.unpack('H', e.data, 0x0A + 1) == 14) then -- If Action 0x0A + 1 = 0x0E Cast Fishing Rod
+            GoneFishin.TotalCasts = GoneFishin.TotalCasts + 1;
+            GoneFishin.LastCast =  os.time()
+            if(GoneFishin.FirstCast == 0) then
+                GoneFishin.FirstCast = os.time();
+                GoneFishin.fishLogActive = true;
+            end
+            if(GoneFishin.sessionPaused) then ResumeSession(); end
+
+            if (GoneFishin.Settings.playerSkill == nil) then
+                local fishingSkill = AshitaCore:GetMemoryManager():GetPlayer():GetCraftSkill(0)
+                GoneFishin.Settings.playerSkill = fishingSkill:GetSkill()
+            end
+        end
+    end
+end);
+
 ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
     GoneFishin.hooked = false;
     ParseFishMessages(e.message);
@@ -498,9 +526,11 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
     local giveUp = string.match(message, "You give up.");
     local giveUpFalse = string.match(message, "You give up and reel in your line.");
     local item = string.match(message, "You feel something pulling at your line.");
-    local skillup = string.match(message, "fishing skill rises (.*) points")
-    local skill = string.match(message, "You lost your catch due to your lack of skill.")
-    local monster = string.match(message, "Something clamps onto your line ferociously!")       
+    local skillup = string.match(message, "fishing skill rises (.*) points");
+    local skill = string.match(message, "You lost your catch due to your lack of skill.");
+    local monster = string.match(message, "Something clamps onto your line ferociously!");
+    local cantfish = string.match(message, "You can't fish"); -- Endings: "without bait on the hook." , "at the moment."
+    local skillLevelUp = string.match(message, "fishing skill reaches level (%d*)");
 
     if(count == 0 or count == nil) then
         count = 1;
@@ -548,9 +578,11 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
             GoneFishin.Fish[monster] = GoneFishin.Fish[monster] + 1;
         else
             GoneFishin.Fish[monster] = 1;
-        end 
+        end
+    elseif (cantfish) then
+        GoneFishin.TotalCasts = GoneFishin.TotalCasts - 1;
     end
-    if(((GoneFishin.hooked and LastBiteMsg ~= 'item') or nothing or item or skill or monster) or ( giveUpFalse == nil and giveUp)) then
+    --[[if(((GoneFishin.hooked and LastBiteMsg ~= 'item') or nothing or item or skill or monster) or ( giveUpFalse == nil and giveUp)) then
         GoneFishin.TotalCasts = GoneFishin.TotalCasts + 1;   
         GoneFishin.LastCast =  os.time()
         if(GoneFishin.FirstCast == 0) then
@@ -559,9 +591,15 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
             GoneFishin.fishLogActive = true;            
         end        
         if(GoneFishin.sessionPaused) then ResumeSession(); end
-    end
+    end]]
     if(skillup) then
         GoneFishin.SkillUps = GoneFishin.SkillUps + skillup;
+        GoneFishin.Settings.playerSkill = GoneFishin.Settings.playerSkill + skillup;
+    end
+    if (skillLevelUp) then
+        if ((skillLevelUp + 0.0) > GoneFishin.Settings.playerSkill) then
+            GoneFishin.Settings.playerSkill = tonumber(skillLevelUp) + 0.0
+        end
     end
 
 end);
