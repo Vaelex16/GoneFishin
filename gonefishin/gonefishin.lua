@@ -51,6 +51,10 @@ local default_settings = T{
     x = T {100},
     y = T {100},
 
+    goodColor = {0.0, 1.0, 0.0, 1.0},
+    itemColor = {1.0, 1.0, 0.0, 1.0},
+    badColor = {1.0, 0.0, 0.0, 1.0},
+
     showItem = T {true},
     showMonster = T {true},
     showGiveup = T {true},
@@ -204,11 +208,11 @@ local function ParseFishMessages(message)
          if (string.match(message, i.text) ~= nil) then
             GoneFishin.fishType = i.fish
             if(string.match(i.fish,'Item') ~= nil) then
-                GoneFishin.fishColor = CalcRGBValues(184, 181, 40, 1.0);
+                GoneFishin.fishColor = GoneFishin.Settings.itemColor;
             elseif(string.match(i.fish,'Monster') ~= nil) then
-                GoneFishin.fishColor = CalcRGBValues(171, 22, 37, 1.0);
+                GoneFishin.fishColor = GoneFishin.Settings.badColor;
             else 
-                GoneFishin.fishColor = CalcRGBValues(22, 171, 25, 1.0);
+                GoneFishin.fishColor = GoneFishin.Settings.goodColor;
             end
             GoneFishin.fishInfoActive = true;            
             break;
@@ -218,11 +222,11 @@ local function ParseFishMessages(message)
          if (string.match(message, i.text) ~= nil) then
             GoneFishin.fishFeel = i.feel
             if(string.match(i.feel,'Good') ~= nil or string.match(i.feel,'Unknown') ~= nil or string.match(i.feel,'Epic') ~= nil or string.match(i.feel,'Angler') ~= nil) then
-                GoneFishin.feelColor = CalcRGBValues(22, 171, 25, 1.0);
+                GoneFishin.feelColor = GoneFishin.Settings.goodColor;
             elseif(string.match(i.feel,'Bad') ~= nil or string.match(i.feel,'Fairly') ~= nil) then
-                GoneFishin.feelColor = CalcRGBValues(227, 240, 113, 1.0);
+                GoneFishin.feelColor = GoneFishin.Settings.itemColor;
             elseif(string.match(i.feel,'Positive') ~= nil or string.match(i.feel,'Terrible') ~= nil) then
-                GoneFishin.feelColor = CalcRGBValues(171, 22, 37, 1.0);
+                GoneFishin.feelColor = GoneFishin.Settings.badColor;
             end
             break;
          end
@@ -262,6 +266,13 @@ local function RenderGeneralSettings()
     -- fish info
     imgui.Checkbox('Show Fish Info', GoneFishin.Settings.fishInfoVisible);
     imgui.ShowHelp('Toggles the fish info window.');
+    imgui.ColorEdit4( "Good Color", GoneFishin.Settings.goodColor );
+    imgui.ShowHelp('Color of the text on the fish Info window indicating a positive outcome.');
+    imgui.ColorEdit4( "Item Color", GoneFishin.Settings.itemColor );
+    imgui.ShowHelp('Color of the text on the fish Info window indicating a item or unkown outcome.');
+    imgui.ColorEdit4( "Bad Color", GoneFishin.Settings.badColor );
+    imgui.ShowHelp('Color of the text on the fish Info window indicating a negative outcome.');
+    
     if (imgui.Button('Save Settings')) then
         settings.save();
         print(chat.header(addon.name):append(chat.message('Settings saved.')));
@@ -326,6 +337,11 @@ local function RenderLog()
         imgui.SameLine();
         if (imgui.Button('Reset')) then
             ResetSession();
+        end 
+        imgui.SameLine();
+        if (imgui.Button('Hide')) then
+            GoneFishin.fishLogActive = false;
+            print(chat.header(addon.name):append(chat.message('Fishing session window is now hidden.')));
         end 
         imgui.Separator();
         if(imgui.BeginTable('Log##Tables',3,bit.bor(ImGuiTableFlags_BordersH,                                                 
@@ -582,16 +598,6 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
     elseif (cantfish) then
         GoneFishin.TotalCasts = GoneFishin.TotalCasts - 1;
     end
-    --[[if(((GoneFishin.hooked and LastBiteMsg ~= 'item') or nothing or item or skill or monster) or ( giveUpFalse == nil and giveUp)) then
-        GoneFishin.TotalCasts = GoneFishin.TotalCasts + 1;   
-        GoneFishin.LastCast =  os.time()
-        if(GoneFishin.FirstCast == 0) then
-            GoneFishin.FirstCast = os.time();
-            fishLogActive = true;
-            GoneFishin.fishLogActive = true;            
-        end        
-        if(GoneFishin.sessionPaused) then ResumeSession(); end
-    end]]
     if(skillup) then
         GoneFishin.SkillUps = GoneFishin.SkillUps + skillup;
         GoneFishin.Settings.playerSkill = GoneFishin.Settings.playerSkill + skillup;
