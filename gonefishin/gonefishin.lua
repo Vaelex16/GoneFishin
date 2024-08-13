@@ -1,6 +1,6 @@
 addon.name      = 'GoneFishin';
 addon.author    = 'Vaelex';
-addon.version   = '1.0';
+addon.version   = '1.2';
 addon.desc      = 'Displays statistical data from fishing, as well as quick a quick view for fish/feelings.';
 addon.link      = 'https://github.com/Vaelex16/GoneFishin/';
 
@@ -64,11 +64,160 @@ local default_settings = T{
     fishInfoVisible =  T {true},
     playerSkill = nil,
     showPlayerSkill = T {true},
+    showFishValue = T{true},
+    showTotalGil = T{true},
+    showGPH = T{true},
+
+    FishValues = T {
+    [1] = "abaia:1920",
+    [2] = "adoulinian kelp:0",
+    [3] = "ahtapot:700",
+    [4] = "alabaligi:98",
+    [5] = "armored pisces:969",
+    [6] = "arrowwood log:5",
+    [7] = "bastore bream:600",
+    [8] = "bastore sardine:9",
+    [9] = "bastore sweeper:93",
+    [10] = "betta:186",
+    [11] = "bhefhel marlin:307",
+    [12] = "bibiki urchin:750",
+    [13] = "bibikibo:99",
+    [14] = "black bubble-eye:9",
+    [15] = "black eel:192",
+    [16] = "black ghost:314",
+    [17] = "black sole:700",
+    [18] = "bladefish:408",
+    [19] = "blindfish:229",
+    [20] = "bluetail:300",
+    [21] = "brass loach:276",
+    [22] = "bugbear mask:0",
+    [23] = "ca cuong:560",
+    [24] = "caedarva frog:100",
+    [25] = "calico comet:12",
+    [26] = "cave cherax:1600",
+    [27] = "cheval salmon:20",
+    [28] = "cobalt jellyfish:11",
+    [29] = "cone calamary:165",
+    [30] = "copper frog:20",
+    [31] = "copper ring:19",
+    [32] = "coral butterfly:127",
+    [33] = "coral fragment:1750",
+    [34] = "crayfish:10",
+    [35] = "crescent fish:403",
+    [36] = "crystal bass:0",
+    [37] = "damp scroll:1",
+    [38] = "dark bass:20",
+    [39] = "denizanasi:7",
+    [40] = "dil:700",
+    [41] = "elshimo frog:52",
+    [42] = "elshimo newt:179",
+    [43] = "emperor fish:615",
+    [44] = "fat greedie:0",
+    [45] = "fish scale shield:384",
+    [46] = "forest carp:22",
+    [47] = "garpike:610",
+    [48] = "gavial fish:500",
+    [49] = "gerrothorax:118",
+    [50] = "giant catfish:102",
+    [51] = "giant chirai:1100",
+    [52] = "giant donko:195",
+    [53] = "gigant octopus:238",
+    [54] = "gigant squid:612",
+    [55] = "gil:0",
+    [56] = "gold carp:289",
+    [57] = "gold lobster:194",
+    [58] = "greedie:11",
+    [59] = "grimmonite:717",
+    [60] = "gugru tuna:100",
+    [61] = "gugrusaurus:1795",
+    [62] = "gurnard:475",
+    [63] = "hamsi:7",
+    [64] = "hydrogauge:0",
+    [65] = "icefish:156",
+    [66] = "istakoz:200",
+    [67] = "istavrit:100",
+    [68] = "istiridye:279",
+    [69] = "jungle catfish:612",
+    [70] = "kalamar:170",
+    [71] = "kalkanbaligi:780",
+    [72] = "kaplumbaga:830",
+    [73] = "kayabaligi:310",
+    [74] = "kilicbaligi:450",
+    [75] = "lakerda:103",
+    [76] = "lamp marimo:31",
+    [77] = "lik:1795",
+    [78] = "lionhead:12",
+    [79] = "lungfish:231",
+    [80] = "matsya:25688",
+    [81] = "megalodon:864",
+    [82] = "mercanbaligi:600",
+    [83] = "mithra snare:0",
+    [84] = "moat carp:10",
+    [85] = "moblin mask:0",
+    [86] = "mola mola:975",
+    [87] = "monke-onke:306",
+    [88] = "moorish idol:242",
+    [89] = "morinabaligi:548",
+    [90] = "muddy siredon:0",
+    [91] = "mythril dagger:1431",
+    [92] = "mythril sword:4100",
+    [93] = "nebimonite:53",
+    [94] = "noble lady:400",
+    [95] = "norg shell:503",
+    [96] = "nosteau herring:80",
+    [97] = "ogre eel:32",
+    [98] = "pamtam kelp:8",
+    [99] = "pearlscale:12",
+    [100] = "phanauet newt:4",
+    [101] = "pipira:47",
+    [102] = "pirarucu:901",
+    [103] = "pterygotus:750",
+    [104] = "quus:19",
+    [105] = "red terrapin:306",
+    [106] = "rhinochimera:613",
+    [107] = "ripped cap:0",
+    [108] = "rusty bucket:51",
+    [109] = "rusty cap:97",
+    [110] = "rusty greatsword:86",
+    [111] = "rusty leggings:12",
+    [112] = "rusty pick:115",
+    [113] = "rusty subligar:15",
+    [114] = "ryugu titan:1500",
+    [115] = "sandfish:26",
+    [116] = "sazanbaligi:300",
+    [117] = "sea zombie:628",
+    [118] = "shall shell:300",
+    [119] = "shining trout:26",
+    [120] = "silver ring:250",
+    [121] = "silver shark:500",
+    [122] = "takitaro:714",
+    [123] = "tarutaru snare:0",
+    [124] = "tavnazian goby:400",
+    [125] = "three-eyed fish:512",
+    [126] = "tiger cod:52",
+    [127] = "tiny goldfish:1",
+    [128] = "titanic sawfish:1652",
+    [129] = "titanictus:714",
+    [130] = "tricolored carp:52",
+    [131] = "tricorn:616",
+    [132] = "trilobite:40",
+    [133] = "trumpet shell:512",
+    [134] = "turnabaligi:693",
+    [135] = "uskumru:300",
+    [136] = "veydal wrasse:420",
+    [137] = "vongola clam:192",
+    [138] = "yayinbaligi:225",
+    [139] = "yellow globe:20",
+    [140] = "yilanbaligi:200",
+    [141] = "zafmlug bass:31",
+    [142] = "zebra eel:385",
+}
 }
 
 local GoneFishin = 
 {
     Settings = settings.load(default_settings),
+    fishValues = T {},
 
     -- Movement variables..
     move = T {dragging = false, drag_x = 0, drag_y = 0, shift_down = false},
@@ -92,10 +241,52 @@ local GoneFishin =
 	Fish = {},
     LastBiteType = '',
     LastSessionLength = 0,
-    fishInfoActive = false;
-    fishLogActive = false;
-    sessionPaused = false;
+    fishInfoActive = false,
+    fishLogActive = false,
+    sessionPaused = false,
+    totalGil = 0,
+    GPH = 0;
 }
+
+local function split(inputstr, sep)
+    if sep == nil then sep = '%s'; end
+    local t = {};
+    for str in string.gmatch(inputstr, '([^' .. sep .. ']+)') do
+        table.insert(t, str);
+    end
+    return t;
+end
+
+local function PopulatePricing()
+    local fish;
+    local value;    
+    for k, v in pairs(GoneFishin.Settings.FishValues) do
+        for k2, v2 in pairs(split(v, ':')) do
+           if(k2 == 1) then fish = v2; end
+           if(k2 == 2) then value = v2; end
+        end
+        GoneFishin.fishValues[fish] = value;
+    end
+end
+
+local function CalcGPH()
+    local total = 0;
+    for k, v in pairs(GoneFishin.Fish) do
+        local gil = GoneFishin.fishValues[k]
+        if(gil ~= nil) then
+            total = total + (gil * v);
+        end
+      
+    end
+    GoneFishin.totalGil = total;
+    local elapsedTime;
+    if(GoneFishin.sessionPaused == false) then
+        elapsedTime =os.difftime(os.time(),GoneFishin.FirstCast)+GoneFishin.LastSessionLength;
+    else
+        elapsedTime = GoneFishin.LastSessionLength; 
+    end
+    GoneFishin.GPH = (total / elapsedTime)*3600;
+end
 
 local MAX_HEIGHT_IN_LINES = 26;
 
@@ -171,7 +362,7 @@ local feels = {
     { text='You don\'t know if you have enough skill to reel this one in.', feel='Unknown'},
     { text='You\'re fairly sure you don\'t have enough skill to reel this one in.', feel='Fairly'},
     { text='You\'re positive you don\'t have enough skill to reel this one in!', feel='Positive'},
-    { text='You\'re keen angler\'s senses tell you that this is the pull of a', feel='Angler'},
+    { text='Your keen angler\'s senses tell you that this is the pull of a', feel='Angler'},
     { text='This strength... You get the sense that you are on the verge of an epic catch!', feel='Epic'},
 };
 
@@ -249,6 +440,10 @@ local function RenderGeneralSettings()
     imgui.ShowHelp('How long should we wait to auto pause the session after the last cast.');
     imgui.Checkbox('Log Visible', GoneFishin.Settings.visible);
     imgui.ShowHelp('Toggles if the fishing log is visible or not.');
+    imgui.Checkbox('Show Total Gil', GoneFishin.Settings.showTotalGil);
+    imgui.ShowHelp('Toggles if total gil is visible or not.');
+    imgui.Checkbox('Show GPH', GoneFishin.Settings.showGPH);
+    imgui.ShowHelp('Toggles if GPH (gil per hour) visible or not.');
     imgui.Checkbox('Show Item tag', GoneFishin.Settings.showItem);
     imgui.ShowHelp('Toggles if the \'item\' tag is visible in the fishing log. NOTE This tag is across all items reguardless of if you actually reel them in.');
     imgui.Checkbox('Show Monster tag', GoneFishin.Settings.showMonster);
@@ -259,6 +454,8 @@ local function RenderGeneralSettings()
     imgui.ShowHelp('Toggles if the \'lack of skill\' tag is visible in the fishing log.');
     imgui.Checkbox('Show Nothing tag', GoneFishin.Settings.showNothing);
     imgui.ShowHelp('Toggles if the \'nothing\' tag is visible in the fishing log.');
+    imgui.Checkbox('Show fish value', GoneFishin.Settings.showFishValue);
+    imgui.ShowHelp('Toggles value column in the fishing log.');
     imgui.Checkbox('Show Player Skill', GoneFishin.Settings.showPlayerSkill);
     imgui.ShowHelp('Toggles showing the player\'s total fishing skill in the fishing log.');
     imgui.Separator();
@@ -280,6 +477,27 @@ local function RenderGeneralSettings()
     imgui.EndChild();
 end
 
+local function RenderFishValueConfig()
+    imgui.BeginChild('settings_general' , { 400, imgui.GetTextLineHeightWithSpacing() * MAX_HEIGHT_IN_LINES}, true, ImGuiWindowFlags_AlwaysAutoResize);
+    imgui.Text('Fish Value Config');
+    imgui.Text('These values indicate NPC worth')
+    imgui.Text('Update to AH price if desired')
+    imgui.Text('**NOTE** format MUST remain fish:value')
+    local temp_strings = T {};
+    temp_strings[1] = table.concat(GoneFishin.Settings.FishValues, '\n');
+    if (imgui.InputTextMultiline('', temp_strings, 8192, {
+        0, imgui.GetTextLineHeightWithSpacing() * (MAX_HEIGHT_IN_LINES - 8)
+    })) then
+        GoneFishin.Settings.FishValues = split(temp_strings[1], '\n');
+    end
+    if (imgui.Button('Save')) then
+        settings.save();
+        PopulatePricing();
+        print(chat.header(addon.name):append(chat.message('Settings saved.')));
+    end
+    imgui.EndChild();
+end
+
 local function RenderEditor()
     if(not GoneFishin.editor.open[1]) then return; end
 
@@ -289,6 +507,10 @@ local function RenderEditor()
         if(imgui.BeginTabBar('##GoneFishin_tabbar', ImGuiTabBarFlags_NoCloseWithMiddleMouseButton)) then
             if(imgui.BeginTabItem('General', nil)) then
                 RenderGeneralSettings();
+                imgui.EndTabItem();
+            end
+            if(imgui.BeginTabItem('Fish Values', nil)) then
+                RenderFishValueConfig();
                 imgui.EndTabItem();
             end
             imgui.EndTabBar();
@@ -319,7 +541,14 @@ local function RenderLog()
                 elapsedTime = os.date('!%H:%M:%S',GoneFishin.LastSessionLength);
             end
             imgui.Text(string.format('Session: %s', elapsedTime));
-            imgui.Text(string.format('Casts: %d', GoneFishin.TotalCasts));
+            imgui.Text(string.format('Casts: %d', GoneFishin.TotalCasts)); 
+            if(GoneFishin.Settings.showTotalGil or GoneFishin.Settings.showGPH) then CalcGPH(); end;
+            if(GoneFishin.Settings.showTotalGil) then
+                imgui.Text(string.format('Total Gil: %s', GoneFishin.totalGil));
+            end
+            if(GoneFishin.Settings.showGPH) then
+                imgui.Text(string.format('GPH: %.2f', GoneFishin.GPH));
+            end
             imgui.Text(string.format('Skill-Ups: %.1f', GoneFishin.SkillUps));
             if (GoneFishin.Settings.showPlayerSkill[1] == true) then
 				imgui.SameLine()
@@ -343,8 +572,8 @@ local function RenderLog()
             GoneFishin.fishLogActive = false;
             print(chat.header(addon.name):append(chat.message('Fishing session window is now hidden.')));
         end 
-        imgui.Separator();
-        if(imgui.BeginTable('Log##Tables',3,bit.bor(ImGuiTableFlags_BordersH,                                                 
+        imgui.Separator();        
+        if(imgui.BeginTable('Log##Tables',4,bit.bor(ImGuiTableFlags_BordersH,                                                 
                                                  ImGuiTableFlags_Reorderable,
                                                  ImGuiTableFlags_Sortable,	
                                                  ImGuiTableFlags_SizingFixedFit,
@@ -353,6 +582,9 @@ local function RenderLog()
             imgui.TableSetupColumn('Fish                    ');
             imgui.TableSetupColumn('Qty');
             imgui.TableSetupColumn('Bite Rate');
+            if(GoneFishin.Settings.showFishValue[1] == true) then
+                imgui.TableSetupColumn('Value');
+            end
             imgui.TableHeadersRow();  
             for k, v in pairs(GoneFishin.Fish) do        	    
                 local bite = string.format("%.2f",v/GoneFishin.TotalCasts*100)..'%';
@@ -368,7 +600,11 @@ local function RenderLog()
                     imgui.TableSetColumnIndex(1);
                     imgui.Text(tostring(v));
                     imgui.TableSetColumnIndex(2);
-                    imgui.Text(bite);
+                    imgui.Text(bite);                    
+                    if(GoneFishin.Settings.showFishValue[1] == true and GoneFishin.fishValues[k] ~= nil) then
+                        imgui.TableSetColumnIndex(3);
+                        imgui.Text(tostring(GoneFishin.fishValues[k] * v))
+                    end
                 end
             end
             imgui.EndTable();
@@ -492,7 +728,9 @@ ashita.events.register('command', 'command_cb', function(e)
 end);
 
 ashita.events.register('load', 'load_cb', function ()
+    PopulatePricing();    
     settings.load();
+    
 end);
 
 ashita.events.register('unload', 'unload_cb', function ()
@@ -539,6 +777,7 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
 	local nothing = string.match(message, "You didn't catch anything.");
     local count = string.match(message, player.Name + " caught (%d*)? (.*)");
     local fish = string.match(message, player.Name + " caught a[n]? (.*)!");
+    if(fish ~= nil) then fish = string.lower(fish); end
     local giveUp = string.match(message, "You give up.");
     local giveUpFalse = string.match(message, "You give up and reel in your line.");
     local item = string.match(message, "You feel something pulling at your line.");
@@ -618,4 +857,5 @@ ashita.events.register('d3d_present', 'BotAPI_HandleRender', function ()
         RenderFishInfo();
     end
     RenderEditor();
+end);
 end);
