@@ -858,4 +858,3 @@ ashita.events.register('d3d_present', 'BotAPI_HandleRender', function ()
     end
     RenderEditor();
 end);
-end);
