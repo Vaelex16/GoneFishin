@@ -1,15 +1,13 @@
 addon.name      = 'GoneFishin';
 addon.author    = 'Vaelex';
-addon.version   = '1.2';
+addon.version   = '1.3';
 addon.desc      = 'Displays statistical data from fishing, as well as quick a quick view for fish/feelings.';
 addon.link      = 'https://github.com/Vaelex16/GoneFishin/';
 
 require('common');
-local fonts = require('fonts');
 local settings = require('settings');
 local chat = require('chat');
 local imgui = require('imgui');
-local scaling = require('scaling');
 
 local function print_help(isError)
     -- Print the help header..
@@ -219,13 +217,8 @@ local GoneFishin =
     Settings = settings.load(default_settings),
     fishValues = T {},
 
-    -- Movement variables..
-    move = T {dragging = false, drag_x = 0, drag_y = 0, shift_down = false},
-
     -- Editor variables..
     editor = T {open = T {false}},
-    gilPerHour = 0,
-    pricing = T {},
     fishType = '',
     fishColor = {},
     fishFeel = '',
@@ -235,11 +228,9 @@ local GoneFishin =
     -- Log variables
     TotalCasts = 0,
     SkillUps =  0.0,
-    Hooked = false,
     FirstCast = 0,
     LastCast = 0,
 	Fish = {},
-    LastBiteType = '',
     LastSessionLength = 0,
     fishInfoActive = false,
     fishLogActive = false,
@@ -283,9 +274,13 @@ local function CalcGPH()
     if(GoneFishin.sessionPaused == false) then
         elapsedTime =os.difftime(os.time(),GoneFishin.FirstCast)+GoneFishin.LastSessionLength;
     else
-        elapsedTime = GoneFishin.LastSessionLength; 
+        elapsedTime = GoneFishin.LastSessionLength;
     end
-    GoneFishin.GPH = (total / elapsedTime)*3600;
+    if(elapsedTime <= 0) then
+        GoneFishin.GPH = 0;
+    else
+        GoneFishin.GPH = (total / elapsedTime)*3600;
+    end
 end
 
 local MAX_HEIGHT_IN_LINES = 26;
@@ -322,32 +317,6 @@ function dumpTable(table, maxDepth, currentDepth)
     end
 end
 
--- Depreciated
-function AssembleLogString()
-    local elapsedTime = os.date('!%H:%M:%S',os.difftime(os.time(),GoneFishin.FirstCast) + GoneFishin.LastSessionLenth)
-    local s = string.format('%s%-20s%-8s%s|r\n', '|cFF7f99b2|','Fish','Qty','Bite Rate');
-    for k, v in pairs(GoneFishin.Fish) do
-        local bite = string.format("%.2f",v/GoneFishin.TotalCasts*100)   
-        if(k == 'item' and GoneFishin.Settings.showItem == true) then
-            s = s .. string.format('%-20s%-8s%s%%\n',k,v,bite)
-        elseif(k == 'monster' and GoneFishin.Settings.showMonster == true) then
-            s = s .. string.format('%-20s%-8s%s%%\n',k,v,bite)
-        elseif(k == 'giveup' and GoneFishin.Settings.showGiveup == true) then
-            s = s .. string.format('%-20s%-8s%s%%\n',k,v,bite)
-        elseif(k == 'skill' and GoneFishin.Settings.showSkill == true) then
-            s = s .. string.format('%-20s%-8s%s%%\n',k,v,bite)
-        elseif(k == 'nothing' and GoneFishin.Settings.showNothing == true) then
-        else
-            s = s .. string.format('%-20s%-8s%s%%\n',k,v,bite)
-        end
-    end
-    if(GoneFishin.FirstCast ~= 0) then
-        s = s .. string.format('\n Session: %s', elapsedTime)
-    end
-    s = s .. string.format('\n Casts: %d\n Skill-Ups: %.1f', GoneFishin.TotalCasts, GoneFishin.SkillUps);
-    return s;
-end
-
 local fishes = {
     { text='Something caught the hook!!!', fish='Large'},
     { text='Something caught the hook!', fish='Small'},
@@ -373,7 +342,6 @@ end
 local function ResetSession()
     GoneFishin.TotalCasts = 0;
     GoneFishin.SkillUps =  0.0;
-    GoneFishin.Hooked = false;
     GoneFishin.FirstCast = 0;
     GoneFishin.LastCast = 0;
     GoneFishin.LastSessionLength = 0;
@@ -425,7 +393,7 @@ local function ParseFishMessages(message)
 end
 
 local function RenderGeneralSettings()    
-    imgui.BeginChild('settings_general' , { 400, imgui.GetTextLineHeightWithSpacing() * MAX_HEIGHT_IN_LINES}, true, ImGuiWindowFlags_AlwaysAutoResize);
+    imgui.BeginChild('settings_general' , { 400, imgui.GetTextLineHeightWithSpacing() * MAX_HEIGHT_IN_LINES}, ImGuiChildFlags_Borders);
     imgui.Text('General Settings');
     imgui.SliderFloat('Opacity', GoneFishin.Settings.opacity, 0.125, 1.0, '%.3f');
     imgui.ShowHelp('The backgorund opacity gone fishin windows.');
@@ -478,7 +446,7 @@ local function RenderGeneralSettings()
 end
 
 local function RenderFishValueConfig()
-    imgui.BeginChild('settings_general' , { 400, imgui.GetTextLineHeightWithSpacing() * MAX_HEIGHT_IN_LINES}, true, ImGuiWindowFlags_AlwaysAutoResize);
+    imgui.BeginChild('settings_fish_values' , { 400, imgui.GetTextLineHeightWithSpacing() * MAX_HEIGHT_IN_LINES}, ImGuiChildFlags_Borders);
     imgui.Text('Fish Value Config');
     imgui.Text('These values indicate NPC worth')
     imgui.Text('Update to AH price if desired')
@@ -530,8 +498,8 @@ local function RenderLog()
     end
     imgui.SetNextWindowBgAlpha(GoneFishin.Settings.opacity[1]);
     imgui.SetNextWindowSize({-1, -1}, ImGuiCond_Always);
-    if(imgui.Begin('Gone Fishin##Log', GoneFishin.Settings.visible[1], bit.bor(ImGuiWindowFlags_NoDecoration,ImGuiWindowFlags_AlwaysAutoResize,ImGuiWindowFlags_NoFocusOnAppearing,ImGuiWindowFlags_NoNav))) then
-        imgui.SetWindowFontScale(GoneFishin.Settings.font_scale[1] + 0.1);
+    if(imgui.Begin('Gone Fishin##Log', nil, bit.bor(ImGuiWindowFlags_NoDecoration,ImGuiWindowFlags_AlwaysAutoResize,ImGuiWindowFlags_NoFocusOnAppearing,ImGuiWindowFlags_NoNav))) then
+        imgui.PushFont(nil, imgui.GetFontSize() * (GoneFishin.Settings.font_scale[1] + 0.1));
         imgui.Text('Gone Fishin\'');
         imgui.Separator();
         imgui.Separator();
@@ -542,11 +510,11 @@ local function RenderLog()
             end
             imgui.Text(string.format('Session: %s', elapsedTime));
             imgui.Text(string.format('Casts: %d', GoneFishin.TotalCasts)); 
-            if(GoneFishin.Settings.showTotalGil or GoneFishin.Settings.showGPH) then CalcGPH(); end;
-            if(GoneFishin.Settings.showTotalGil) then
+            if(GoneFishin.Settings.showTotalGil[1] or GoneFishin.Settings.showGPH[1]) then CalcGPH(); end;
+            if(GoneFishin.Settings.showTotalGil[1]) then
                 imgui.Text(string.format('Total Gil: %s', GoneFishin.totalGil));
             end
-            if(GoneFishin.Settings.showGPH) then
+            if(GoneFishin.Settings.showGPH[1]) then
                 imgui.Text(string.format('GPH: %.2f', GoneFishin.GPH));
             end
             imgui.Text(string.format('Skill-Ups: %.1f', GoneFishin.SkillUps));
@@ -609,6 +577,7 @@ local function RenderLog()
             end
             imgui.EndTable();
         end
+        imgui.PopFont();
     end
     imgui.End();
 end
@@ -616,14 +585,14 @@ end
 local function RenderFishInfo()
     imgui.SetNextWindowBgAlpha(GoneFishin.Settings.opacity[1]);
     imgui.SetNextWindowSize({-1, -1}, ImGuiCond_Always);
-        if(imgui.Begin('Gone Fishin##FishInfo', GoneFishin.Settings.visible[1], bit.bor(ImGuiWindowFlags_NoDecoration,ImGuiWindowFlags_AlwaysAutoResize,ImGuiWindowFlags_NoFocusOnAppearing,ImGuiWindowFlags_NoNav))) then        
-            imgui.SetWindowFontScale(GoneFishin.Settings.font_scale[1] + 3.0);
-            imgui.SetWindowFontScale(GoneFishin.Settings.font_scale[1]);
+        if(imgui.Begin('Gone Fishin##FishInfo', nil, bit.bor(ImGuiWindowFlags_NoDecoration,ImGuiWindowFlags_AlwaysAutoResize,ImGuiWindowFlags_NoFocusOnAppearing,ImGuiWindowFlags_NoNav))) then        
+            imgui.PushFont(nil, imgui.GetFontSize() * GoneFishin.Settings.font_scale[1]);
             imgui.TextColored(GoneFishin.fishColor, GoneFishin.fishType);
             imgui.SameLine();
             imgui.Text('|');
             imgui.SameLine();
             imgui.TextColored(GoneFishin.feelColor, GoneFishin.fishFeel);
+            imgui.PopFont();
     end
     imgui.End();
 end
@@ -631,8 +600,8 @@ end
 settings.register('settings', 'settings_update', function (s)
     if (s ~= nil) then
         GoneFishin.Settings = s
+        PopulatePricing();
     end
-    settings.save();
 end);
 
 --[[
@@ -728,9 +697,7 @@ ashita.events.register('command', 'command_cb', function(e)
 end);
 
 ashita.events.register('load', 'load_cb', function ()
-    PopulatePricing();    
     settings.load();
-    
 end);
 
 ashita.events.register('unload', 'unload_cb', function ()
@@ -806,7 +773,6 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
         end        
     elseif(item) then
         item = "item";
-        LastBiteMsg = "item"
         if(GoneFishin.Fish[item] ~= nil) then
             GoneFishin.Fish[item] = GoneFishin.Fish[item] + 1;
         else
@@ -828,7 +794,6 @@ ashita.events.register('text_in', 'GoneFishin_HandleText', function (e)
         end 
     elseif(monster) then
         monster = "monster";
-        LastBiteMsg = "monster"
         if(GoneFishin.Fish[monster] ~= nil) then
             GoneFishin.Fish[monster] = GoneFishin.Fish[monster] + 1;
         else
